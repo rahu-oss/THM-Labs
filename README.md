@@ -12,9 +12,6 @@ Bricks Heist	WordPress / Bricks Builder	TryHackMe — TryHack3M: Bricks Heist	Un
 
 Full compromise of a Debian/WordPress lab host, chaining a vulnerable plugin, a broken-access-control bug, an internal service pivot, a TOCTOU race condition, and a sudo misconfiguration to go from zero credentials to root.
 
-📄 Breakme/Penetration_Test_Report.pdf
-📄 Breakme/Penetration_Test_Report.docx
-
 Attack chain:
 
 Recon — Nmap + Gobuster identify SSH, Apache, and a WordPress install
