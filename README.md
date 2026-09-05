@@ -54,3 +54,20 @@ Linux privilege escalation (sudo misconfiguration, sandbox escape)
 Indicator-of-compromise triage and basic digital forensics
 Open-source threat-intelligence correlation and attribution
 Professional report writing — risk rating, evidence documentation, remediation guidance
+
+🌀 Moebius
+
+A self-referential vulnerability chain: an application flaw exposes its own source code, which discloses the very secret key protecting that flaw — leveraged into unauthenticated RCE, then escalated through a container misconfiguration into full host root.
+
+Attack chain:
+
+Recon — Nmap + Gobuster identify SSH and an Apache-hosted PHP "Image Grid" application
+SQL injection — Unauthenticated SQLi in album.php?short_tag, confirmed and enumerated with sqlmap (databases, tables, columns, data dump)
+Source code disclosure — A PHP filter-chain (php://filter) LFI technique reads the app's own PHP source, leaking DB credentials and the HMAC secret key used to validate file-access requests
+Unauthenticated RCE — The leaked key forges valid signatures; the same filter-chain technique is repurposed to smuggle and execute attacker-controlled PHP with no file upload, landing a shell as www-data in a Docker container
+Trivial container root — A NOPASSWD: ALL sudo rule for www-data gives instant root inside the container
+Container-to-host escape — The container is running with privileged: true, allowing the host filesystem to be mounted from inside the container
+Host compromise — An attacker-controlled SSH key is written directly into the host root's authorized_keys; an LD_PRELOAD reverse-shell payload is staged as a supporting escalation technique
+Full root — SSH access as root on the underlying Ubuntu 22.04 host, recovering docker-compose.yml and database root credentials
+
+Tools: nmap · gobuster · sqlmap · public PHP filter-chain generator (LFI-to-RCE technique) · custom HMAC-signing exploit driver · netcat · custom C/LD_PRELOAD payload · manual Docker/Linux enumeration
